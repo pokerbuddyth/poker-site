@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The House — Private Poker Club</title>
+<meta name="description" content="An invite-only online poker network. NLH, PLO, OFC, Mau Binh, Pusoy across the world's best apps." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #0a0d0b;
+    --bg-2: #0f1411;
+    --felt: #0e3b2c;
+    --felt-deep: #062017;
+    --gold: #c9a14a;
+    --gold-bright: #e7c66a;
+    --gold-soft: #8a6f30;
+    --cream: #efe7d2;
+    --ink: #f5efdf;
+    --muted: #8a8377;
+    --line: rgba(201, 161, 74, 0.18);
+    --line-strong: rgba(201, 161, 74, 0.45);
+    --red: #b8443a;
+    --black-card: #14110d;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Grain & vignette overlays */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.08 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+    opacity: 0.6;
+    mix-blend-mode: overlay;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 100%);
+  }
+
+  .display { font-family: 'Cormorant Garamond', serif; font-weight: 400; letter-spacing: -0.01em; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ============ NAV ============ */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    padding: 1.4rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(10,13,11,0.92), rgba(10,13,11,0.4));
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--gold-bright);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .brand-mark {
+    width: 28px; height: 28px;
+    border: 1px solid var(--gold);
+    transform: rotate(45deg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .brand-mark::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--gold);
+    transform: rotate(0);
+  }
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 400;
+    transition: color 0.3s;
+    position: relative;
+  }
+  .nav-links a:hover { color: var(--gold-bright); }
+  .nav-cta {
+    padding: 0.6rem 1.4rem;
+    border: 1px solid var(--gold);
+    color: var(--gold-bright);
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: all 0.3s;
+  }
+  .nav-cta:hover { background: var(--gold); color: var(--bg); }
+
+  /* ============ HERO ============ */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 8rem 3rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 40%, rgba(14, 59, 44, 0.55), transparent 70%),
+      radial-gradient(circle at 20% 80%, rgba(201, 161, 74, 0.08), transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(184, 68, 58, 0.06), transparent 50%);
+    z-index: -1;
+  }
+
+  /* Suit symbols floating in hero */
+  .suits {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .suit {
+    position: absolute;
+    font-family: serif;
+    color: var(--gold);
+    opacity: 0.06;
+    user-select: none;
+  }
+  .suit.s1 { top: 12%; left: 8%; font-size: 9rem; transform: rotate(-15deg); }
+  .suit.s2 { top: 60%; right: 10%; font-size: 11rem; transform: rotate(20deg); color: var(--red); opacity: 0.08; }
+  .suit.s3 { bottom: 15%; left: 15%; font-size: 7rem; transform: rotate(8deg); }
+  .suit.s4 { top: 25%; right: 25%; font-size: 6rem; transform: rotate(-25deg); color: var(--red); opacity: 0.07; }
+
+  .hero-content {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+
+  .eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    animation: fadeUp 1s ease 0.1s backwards;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    line-height: 0.95;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+    color: var(--cream);
+    animation: fadeUp 1s ease 0.25s backwards;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold-bright);
+    font-weight: 300;
+  }
+  .hero h1 .amp {
+    font-style: italic;
+    color: var(--gold);
+    font-weight: 300;
+  }
+
+  .hero-lede {
+    font-size: 1.1rem;
+    color: var(--muted);
+    max-width: 480px;
+    margin-bottom: 2.5rem;
+    line-height: 1.7;
+    animation: fadeUp 1s ease 0.4s backwards;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    animation: fadeUp 1s ease 0.55s backwards;
+  }
+  .btn-primary {
+    padding: 1rem 2.2rem;
+    background: var(--gold);
+    color: var(--bg);
+    text-decoration: none;
+    font-size: 0.78rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 500;
+    transition: all 0.3s;
+    border: 1px solid var(--gold);
+  }
+  .btn-primary:hover {
+    background: var(--gold-bright);
+    border-color: var(--gold-bright);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(201, 161, 74, 0.25);
+  }
+  .btn-ghost {
+    padding: 1rem 2.2rem;
+    background: transparent;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 0.78rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-weight: 400;
+    border: 1px solid var(--line-strong);
+    transition: all 0.3s;
+  }
+  .btn-ghost:hover {
+    border-color: var(--gold);
+    color: var(--gold-bright);
+  }
+
+  /* Hero card stack */
+  .card-stack {
+    position: relative;
+    height: 480px;
+    animation: fadeUp 1.2s ease 0.6s backwards;
+  }
+  .playing-card {
+    position: absolute;
+    width: 230px;
+    height: 320px;
+    background: linear-gradient(155deg, #faf6e8, #efe5c9);
+    border-radius: 14px;
+    box-shadow:
+      0 30px 60px -20px rgba(0,0,0,0.6),
+      0 0 0 1px rgba(201, 161, 74, 0.3),
+      inset 0 0 0 8px rgba(201, 161, 74, 0.15);
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: var(--black-card);
+    font-family: 'Cormorant Garamond', serif;
+    transition: transform 0.6s cubic-bezier(.2,.8,.2,1);
+  }
+  .playing-card .corner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+  }
+  .playing-card .rank {
+    font-size: 2.2rem;
+    font-weight: 500;
+  }
+  .playing-card .suit-mark {
+    font-size: 1.6rem;
+    margin-top: 2px;
+  }
+  .playing-card .center-suit {
+    align-self: center;
+    font-size: 5.5rem;
+  }
+  .playing-card .corner.bottom {
+    transform: rotate(180deg);
+    align-self: flex-end;
+  }
+  .playing-card.red .rank, .playing-card.red .suit-mark, .playing-card.red .center-suit {
+    color: var(--red);
+  }
+
+  .card-1 { transform: rotate(-12deg) translate(-30px, 20px); z-index: 1; }
+  .card-2 { transform: rotate(-2deg) translate(40px, 10px); z-index: 2; }
+  .card-3 { transform: rotate(8deg) translate(110px, 30px); z-index: 3; }
+
+  .card-stack:hover .card-1 { transform: rotate(-18deg) translate(-50px, 10px); }
+  .card-stack:hover .card-2 { transform: rotate(-2deg) translate(40px, -10px); }
+  .card-stack:hover .card-3 { transform: rotate(14deg) translate(130px, 20px); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============ SECTION GENERAL ============ */
+  section {
+    padding: 7rem 3rem;
+    position: relative;
+  }
+  .container {
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 4rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--line);
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    margin-bottom: 0.8rem;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    color: var(--cream);
+    max-width: 700px;
+  }
+  .section-title em { font-style: italic; color: var(--gold-bright); }
+  .section-meta {
+    font-size: 0.85rem;
+    color: var(--muted);
+    max-width: 320px;
+    text-align: right;
+  }
+
+  /* ============ GAMES ============ */
+  .games {
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+  }
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0;
+    border: 1px solid var(--line);
+  }
+  .game-card {
+    padding: 2.5rem 2rem;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    background: rgba(14, 59, 44, 0.04);
+    transition: background 0.5s;
+    cursor: default;
+  }
+  .game-card:last-child { border-right: none; }
+  .game-card:hover {
+    background: rgba(201, 161, 74, 0.06);
+  }
+  .game-card .gnum {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--gold-soft);
+    letter-spacing: 0.2em;
+    margin-bottom: 1.2rem;
+  }
+  .game-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 0.4rem;
+    line-height: 1.1;
+  }
+  .game-card .gabbr {
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+  .game-card p {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  @media (max-width: 1024px) {
+    .games-grid { grid-template-columns: repeat(2, 1fr); }
+    .game-card:nth-child(2n) { border-right: none; }
+    .game-card:nth-child(2n+1) { border-right: 1px solid var(--line); }
+  }
+  @media (max-width: 600px) {
+    .games-grid { grid-template-columns: 1fr; }
+    .game-card { border-right: none !important; }
+  }
+
+  /* ============ APPS ============ */
+  .apps {
+    background: var(--bg);
+    position: relative;
+  }
+  .apps::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 80% 30%, rgba(14, 59, 44, 0.3), transparent 50%);
+    pointer-events: none;
+  }
+  .apps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    position: relative;
+  }
+  .app-card {
+    background: linear-gradient(155deg, rgba(20, 26, 22, 0.9), rgba(15, 20, 17, 0.9));
+    border: 1px solid var(--line);
+    padding: 2.5rem 2rem;
+    text-decoration: none;
+    color: var(--ink);
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+  .app-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s ease;
+  }
+  .app-card:hover {
+    border-color: var(--line-strong);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.4);
+  }
+  .app-card:hover::before { transform: scaleX(1); }
+  .app-icon {
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--gold-bright);
+    margin-bottom: 1.5rem;
+    background: rgba(201, 161, 74, 0.04);
+  }
+  .app-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.7rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 0.4rem;
+  }
+  .app-card .app-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--gold-soft);
+    letter-spacing: 0.15em;
+    margin-bottom: 1rem;
+  }
+  .app-card p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    min-height: 3rem;
+  }
+  .app-link {
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .app-link::after {
+    content: '→';
+    transition: transform 0.3s;
+  }
+  .app-card:hover .app-link::after {
+    transform: translateX(4px);
+  }
+
+  /* ============ CLUBS ============ */
+  .clubs {
+    background: linear-gradient(180deg, var(--bg) 0%, #060807 100%);
+  }
+  .clubs-wrap {
+    display: grid;
+    gap: 4rem;
+  }
+  .platform-block {
+    position: relative;
+  }
+  .platform-head {
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .platform-head h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 500;
+    color: var(--gold-bright);
+  }
+  .platform-head .pcount {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.18em;
+  }
+
+  .clubs-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+  .club-card {
+    background: linear-gradient(160deg, rgba(14, 59, 44, 0.18), rgba(15, 20, 17, 0.6));
+    border: 1px solid var(--line);
+    padding: 2rem;
+    position: relative;
+    transition: all 0.4s;
+  }
+  .club-card::before {
+    content: '';
+    position: absolute;
+    top: 1rem; right: 1rem;
+    width: 8px; height: 8px;
+    background: var(--gold);
+    transform: rotate(45deg);
+  }
+  .club-card:hover {
+    border-color: var(--gold-soft);
+    background: linear-gradient(160deg, rgba(14, 59, 44, 0.3), rgba(15, 20, 17, 0.7));
+  }
+  .club-card .club-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .club-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.65rem 0;
+    font-size: 0.88rem;
+    border-bottom: 1px dashed rgba(201, 161, 74, 0.1);
+  }
+  .club-row:last-child { border-bottom: none; }
+  .club-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .club-val {
+    color: var(--ink);
+    font-weight: 400;
+    text-align: right;
+  }
+  .club-val.gold { color: var(--gold-bright); font-family: 'JetBrains Mono', monospace; }
+  .club-val.rate {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--gold-bright);
+  }
+  .club-rules {
+    margin-top: 1rem;
+    padding: 0.9rem 1rem;
+    background: rgba(184, 68, 58, 0.08);
+    border-left: 2px solid var(--red);
+    font-size: 0.78rem;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .club-rules strong {
+    color: var(--red);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ============ PAYMENT ============ */
+  .payment {
+    background: var(--bg-2);
+  }
+  .pay-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--line);
+  }
+  .pay-card {
+    padding: 3rem 2rem;
+    border-right: 1px solid var(--line);
+    text-align: center;
+    position: relative;
+    transition: all 0.4s;
+  }
+  .pay-card:last-child { border-right: none; }
+  .pay-card:hover {
+    background: rgba(201, 161, 74, 0.04);
+  }
+  .pay-icon {
+    width: 60px; height: 60px;
+    margin: 0 auto 1.5rem;
+    border: 1px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(45deg);
+    transition: transform 0.5s;
+  }
+  .pay-card:hover .pay-icon {
+    transform: rotate(225deg);
+    border-color: var(--gold-bright);
+  }
+  .pay-icon svg {
+    transform: rotate(-45deg);
+    transition: transform 0.5s;
+  }
+  .pay-card:hover .pay-icon svg {
+    transform: rotate(-225deg);
+  }
+  .pay-card h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 0.5rem;
+  }
+  .pay-card p {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 900px) {
+    .pay-grid { grid-template-columns: repeat(2, 1fr); }
+    .pay-card:nth-child(2) { border-right: none; }
+    .pay-card:nth-child(1), .pay-card:nth-child(3) { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .pay-card:nth-child(2) { border-bottom: 1px solid var(--line); }
+  }
+  @media (max-width: 500px) {
+    .pay-grid { grid-template-columns: 1fr; }
+    .pay-card { border-right: none !important; border-bottom: 1px solid var(--line) !important; }
+    .pay-card:last-child { border-bottom: none !important; }
+  }
+
+  /* ============ CTA ============ */
+  .cta-section {
+    padding: 8rem 3rem;
+    text-align: center;
+    background:
+      radial-gradient(ellipse at center, rgba(14, 59, 44, 0.4), transparent 60%),
+      var(--bg);
+    position: relative;
+  }
+  .cta-section .display {
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    line-height: 1.05;
+    margin-bottom: 2rem;
+    color: var(--cream);
+  }
+  .cta-section .display em { font-style: italic; color: var(--gold-bright); }
+  .cta-section p {
+    color: var(--muted);
+    max-width: 540px;
+    margin: 0 auto 3rem;
+    font-size: 1.05rem;
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 3rem;
+    background: #050706;
+  }
+  .footer-inner {
+    max-width: 1300px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .footer-inner .brand { font-size: 1.2rem; }
+
+  /* ============ MOBILE NAV ============ */
+  @media (max-width: 850px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    section { padding: 5rem 1.5rem; }
+    .hero { padding: 7rem 1.5rem 4rem; }
+    .hero-content { grid-template-columns: 1fr; gap: 3rem; }
+    .card-stack { height: 380px; max-width: 400px; margin: 0 auto; }
+    .section-head { flex-direction: column; align-items: flex-start; }
+    .section-meta { text-align: left; }
+    .platform-head { flex-wrap: wrap; gap: 0.5rem; }
+    .clubs-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="brand">
+    <span class="brand-mark"></span>
+    The House
+  </a>
+  <ul class="nav-links">
+    <li><a href="#games">Games</a></li>
+    <li><a href="#apps">Platforms</a></li>
+    <li><a href="#clubs">Clubs</a></li>
+    <li><a href="#payment">Payment</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Join</a>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="suits">
+    <span class="suit s1">♠</span>
+    <span class="suit s2">♥</span>
+    <span class="suit s3">♣</span>
+    <span class="suit s4">♦</span>
+  </div>
+  <div class="hero-content">
+    <div>
+      <div class="eyebrow">Private Network · Est. Bangkok</div>
+      <h1>
+        Where the <em>cards</em><br>
+        fall <span class="amp">&amp;</span> the<br>
+        stakes are real.
+      </h1>
+      <p class="hero-lede">
+        An invite-only poker network connecting serious players to the world's most reputable apps and clubs. Holdem, Omaha, OFC, Mau Binh, Pusoy — one trusted host, every game.
+      </p>
+      <div class="hero-cta">
+        <a href="#contact" class="btn-primary">Request Access</a>
+        <a href="#apps" class="btn-ghost">View Platforms</a>
+      </div>
+    </div>
+
+    <div class="card-stack">
+      <div class="playing-card card-1">
+        <div class="corner top">
+          <span class="rank">A</span>
+          <span class="suit-mark">♠</span>
+        </div>
+        <span class="center-suit">♠</span>
+        <div class="corner bottom">
+          <span class="rank">A</span>
+          <span class="suit-mark">♠</span>
+        </div>
+      </div>
+      <div class="playing-card card-2 red">
+        <div class="corner top">
+          <span class="rank">K</span>
+          <span class="suit-mark">♥</span>
+        </div>
+        <span class="center-suit">♥</span>
+        <div class="corner bottom">
+          <span class="rank">K</span>
+          <span class="suit-mark">♥</span>
+        </div>
+      </div>
+      <div class="playing-card card-3">
+        <div class="corner top">
+          <span class="rank">Q</span>
+          <span class="suit-mark">♣</span>
+        </div>
+        <span class="center-suit">♣</span>
+        <div class="corner bottom">
+          <span class="rank">Q</span>
+          <span class="suit-mark">♣</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ GAMES ============ -->
+<section class="games" id="games">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="section-num">— 01 / GAMES</div>
+        <h2 class="section-title">Five disciplines.<br><em>One table.</em></h2>
+      </div>
+      <p class="section-meta">From the modern classics to traditional Asian variants — every game runs at every stake.</p>
+    </div>
+
+    <div class="games-grid">
+      <article class="game-card">
+        <div class="gnum">— G.01</div>
+        <h3>Texas Hold'em</h3>
+        <div class="gabbr">NLH · No Limit</div>
+        <p>The flagship. Two cards down, five up the middle, and every chip on the line whenever you want it to be.</p>
+      </article>
+
+      <article class="game-card">
+        <div class="gnum">— G.02</div>
+        <h3>Omaha</h3>
+        <div class="gabbr">PLO · Pot Limit</div>
+        <p>Four hole cards, twice the action. The thinking player's game where reads matter more than ever.</p>
+      </article>
+
+      <article class="game-card">
+        <div class="gnum">— G.03</div>
+        <h3>Open Face Chinese</h3>
+        <div class="gabbr">OFC · Pineapple variants</div>
+        <p>A modern obsession. Build three winning hands, fantasy land waits for the disciplined.</p>
+      </article>
+
+      <article class="game-card">
+        <div class="gnum">— G.04</div>
+        <h3>Mậu Binh</h3>
+        <div class="gabbr">Vietnamese Poker</div>
+        <p>Thirteen cards, three rows, ancient strategy. The Southeast Asian classic, played at scale.</p>
+      </article>
+
+      <article class="game-card">
+        <div class="gnum">— G.05</div>
+        <h3>Pusoy</h3>
+        <div class="gabbr">Filipino Chinese Poker</div>
+        <p>The original Big Two ancestor. Sharp, social, fast — and unforgiving to anyone who isn't paying attention.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APPS ============ -->
+<section class="apps" id="apps">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="section-num">— 02 / PLATFORMS</div>
+        <h2 class="section-title">The world's most<br>trusted <em>apps.</em></h2>
+      </div>
+      <p class="section-meta">We host on the platforms serious players already know. Download, register, sit down.</p>
+    </div>
+
+    <div class="apps-grid">
+      <a href="https://apps.apple.com/th/app/x-poker-holdem-omaha-ofc/id1534470447" target="_blank" rel="noopener" class="app-card">
+        <div class="app-icon">X</div>
+        <h3>X-Poker</h3>
+        <div class="app-tag">— NLH · PLO · OFC</div>
+        <p>Full-spectrum action across the most popular variants in one app.</p>
+        <span class="app-link">Open in App Store</span>
+      </a>
+
+      <a href="https://apps.apple.com/th/app/aa-poker-texas-holdem/id6479183625" target="_blank" rel="noopener" class="app-card">
+        <div class="app-icon">AA</div>
+        <h3>AA Poker</h3>
+        <div class="app-tag">— TEXAS HOLD'EM</div>
+        <p>Holdem-focused. Tight tables, professional ecosystem, fast cashouts.</p>
+        <span class="app-link">Open in App Store</span>
+      </a>
+
+      <a href="https://apps.apple.com/th/app/clubgg-poker/id1529839330" target="_blank" rel="noopener" class="app-card">
+        <div class="app-icon">GG</div>
+        <h3>ClubGG</h3>
+        <div class="app-tag">— GLOBAL · CLUB POKER</div>
+        <p>Backed by the GGNetwork brand. International field, deep liquidity.</p>
+        <span class="app-link">Open in App Store</span>
+      </a>
+
+      <a href="https://th.qqpk.poker/?shareCode=MGSGRT" target="_blank" rel="noopener" class="app-card">
+        <div class="app-icon">QQ</div>
+        <h3>QQPK</h3>
+        <div class="app-tag">— ASIA NETWORK</div>
+        <p>A regional favorite with a strong Asian player pool and mixed games.</p>
+        <span class="app-link">Visit Site</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CLUBS ============ -->
+<section class="clubs" id="clubs">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="section-num">— 03 / CLUBS</div>
+        <h2 class="section-title">Our clubs <em>&amp;</em><br>chip currencies.</h2>
+      </div>
+      <p class="section-meta">All clubs are vetted. All chips are accounted for. Use the referral IDs below when joining for tracked play.</p>
+    </div>
+
+    <div class="clubs-wrap">
+
+      <!-- X-Poker -->
+      <div class="platform-block">
+        <div class="platform-head">
+          <h3>X-Poker</h3>
+          <span class="pcount">— 02 CLUBS</span>
+        </div>
+        <div class="clubs-row">
+          <div class="club-card">
+            <div class="club-name">Garuda</div>
+            <div class="club-row"><span class="club-label">Club ID</span><span class="club-val gold">843605</span></div>
+            <div class="club-row"><span class="club-label">Referral ID</span><span class="club-val gold">3928170</span></div>
+            <div class="club-row"><span class="club-label">Chip Rate</span><span class="club-val rate">1 chip = ฿2 THB</span></div>
+          </div>
+
+          <div class="club-card">
+            <div class="club-name">Lequest</div>
+            <div class="club-row"><span class="club-label">Club ID</span><span class="club-val gold">2479856</span></div>
+            <div class="club-row"><span class="club-label">Referral ID</span><span class="club-val gold">3928170</span></div>
+            <div class="club-row"><span class="club-label">Chip Rate</span><span class="club-val rate">1 chip = ฿1 THB</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AA Poker -->
+      <div class="platform-block">
+        <div class="platform-head">
+          <h3>AA Poker</h3>
+          <span class="pcount">— 01 CLUB</span>
+        </div>
+        <div class="clubs-row">
+          <div class="club-card">
+            <div class="club-name">SS Club</div>
+            <div class="club-row"><span class="club-label">Club ID</span><span class="club-val gold">318813</span></div>
+            <div class="club-row"><span class="club-label">Chip Rate</span><span class="club-val rate">1 chip = ฿1 THB</span></div>
+            <div class="club-rules">
+              <strong>House Rule</strong>
+              Winners must play a minimum of 50 hands or forfeit 30% of winnings on the table.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ClubGG -->
+      <div class="platform-block">
+        <div class="platform-head">
+          <h3>ClubGG</h3>
+          <span class="pcount">— 02 CLUBS</span>
+        </div>
+        <div class="clubs-row">
+          <div class="club-card">
+            <div class="club-name">OneTimePoker</div>
+            <div class="club-row"><span class="club-label">Club ID</span><span class="club-val gold">474397</span></div>
+            <div class="club-row"><span class="club-label">Referral ID</span><span class="club-val gold">12029677</span></div>
+            <div class="club-row"><span class="club-label">Chip Rate</span><span class="club-val rate">1 chip = $0.85 USD</span></div>
+          </div>
+
+          <div class="club-card">
+            <div class="club-name">Win Max</div>
+            <div class="club-row"><span class="club-label">Club ID</span><span class="club-val gold">927804</span></div>
+            <div class="club-row"><span class="club-label">Chip Rate</span><span class="club-val rate">1 chip = RM1 MYR</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAYMENT ============ -->
+<section class="payment" id="payment">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="section-num">— 04 / PAYMENT</div>
+        <h2 class="section-title">However you<br>want to <em>settle.</em></h2>
+      </div>
+      <p class="section-meta">Settlement on your terms. Discreet, fast, and on whatever rails work for you.</p>
+    </div>
+
+    <div class="pay-grid">
+      <div class="pay-card">
+        <div class="pay-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9a14a" stroke-width="1.4">
+            <rect x="3" y="6" width="18" height="12" rx="1"/>
+            <circle cx="12" cy="12" r="2.5"/>
+            <path d="M3 10h18M3 14h18"/>
+          </svg>
+        </div>
+        <h4>Cash</h4>
+        <p>In-person settlement, Bangkok &amp; on request.</p>
+      </div>
+
+      <div class="pay-card">
+        <div class="pay-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9a14a" stroke-width="1.4">
+            <path d="M3 12h12l-3-3M21 12H9l3 3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h4>Local Transfer</h4>
+        <p>Thai bank transfers, instant settlement.</p>
+      </div>
+
+      <div class="pay-card">
+        <div class="pay-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9a14a" stroke-width="1.4">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/>
+          </svg>
+        </div>
+        <h4>Foreign Transfer</h4>
+        <p>International wires &amp; remittance partners.</p>
+      </div>
+
+      <div class="pay-card">
+        <div class="pay-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c9a14a" stroke-width="1.4">
+            <path d="M12 3l8 5v8l-8 5-8-5V8z" stroke-linejoin="round"/>
+            <path d="M12 8v8M8 10l4-2 4 2M8 14l4 2 4-2"/>
+          </svg>
+        </div>
+        <h4>Cryptocurrency</h4>
+        <p>USDT, BTC, ETH and major stablecoins.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta-section" id="contact">
+  <div class="container">
+    <div class="section-num">— 05 / CONTACT</div>
+    <h2 class="display">Ready to take a <em>seat?</em></h2>
+    <p>Membership is by personal introduction. Reach out and we'll set up your accounts, walk you through the apps, and get you to a table tonight.</p>
+    <div class="hero-cta" style="justify-content: center;">
+      <a href="#" class="btn-primary">Get In Touch</a>
+      <a href="#apps" class="btn-ghost">Browse Apps</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      The House
+    </div>
+    <div>© <span id="year"></span> · Private Poker Network · Bangkok</div>
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.18em;">PLAY RESPONSIBLY · 18+</div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Subtle parallax on suit symbols
+  const suits = document.querySelectorAll('.suit');
+  document.addEventListener('mousemove', (e) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 20;
+    const y = (e.clientY / window.innerHeight - 0.5) * 20;
+    suits.forEach((s, i) => {
+      const factor = (i + 1) * 0.4;
+      s.style.transform = `${s.style.transform.split('translate')[0]} translate(${x * factor}px, ${y * factor}px)`;
+    });
+  });
+</script>
+
+</body>
+</html>
